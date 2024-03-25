@@ -10,18 +10,19 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#62def8"
+        android:background="#1a73e8"
         android:orientation="vertical"
-      android:translationY="200dp"
+        android:translationY="180dp"
         android:padding="20dp"
 
         tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="476dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Website Name" />
+            android:text="Website Name"
+            android:textColor="@color/white" />
 
         <EditText
             android:id="@+id/editTextText3"
@@ -29,13 +30,30 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="" />
+            android:text=""
+            android:textColor="@color/white"/>
 
+        <TextView
+            android:id="@+id/textViewUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Useraname"
+            android:textColor="@color/white" />
+
+        <EditText
+            android:id="@+id/editTextUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:text=""
+            android:textColor="@color/white"/>
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password" />
+            android:text="Password"
+            android:textColor="@color/white"/>
 
         <EditText
             android:id="@+id/editTextText4"
@@ -55,7 +73,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Save" />
+                android:text="Save"
+                android:textColor="@color/white"/>
 
         </LinearLayout>
     </LinearLayout>

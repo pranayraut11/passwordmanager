@@ -26,12 +26,14 @@ public class WebsitePopup extends PopupLayout {
             PasswordInfo passwordInfo = new PasswordInfo();
             EditText websiteName = popupView.findViewById(R.id.editTextText3);
             EditText password = popupView.findViewById(R.id.editTextText4);
+            EditText username = popupView.findViewById(R.id.editTextUsername);
             passwordInfo.setWebsiteName(websiteName.getText().toString());
+            passwordInfo.setUsername(username.getText().toString());
             passwordInfo.setPassword(password.getText().toString().getBytes(StandardCharsets.UTF_8));
             DatabaseHelper databaseHelper = new DatabaseHelper(v.getContext());
             databaseHelper.addRecord(passwordInfo);
             Toast.makeText(v.getContext(), "Saved", Toast.LENGTH_SHORT).show();
-            customListAdapter.updateList(databaseHelper.getAll());
+            customListAdapter.updateList();
 
             Log.d("List","Update list");
             popupWindow.dismiss();

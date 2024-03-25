@@ -1,7 +1,6 @@
 package com.manager.password;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,24 +22,8 @@ import com.manager.password.adapter.CustomListAdapter;
 import com.manager.password.database.DatabaseHelper;
 import com.manager.password.entity.PasswordInfo;
 import com.manager.password.layout.PasswordPopup;
-import com.manager.password.layout.PopupLayout;
+
 import com.manager.password.layout.WebsitePopup;
-import com.manager.password.security.PasswordSecurity;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
-import java.util.List;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,27 +41,25 @@ public class MainActivity extends AppCompatActivity {
         });
         final ListView listview = findViewById(R.id.website_list);
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        List<PasswordInfo> passwordInfoList = databaseHelper.getAll();
-
-        CustomListAdapter customListAdapter = new CustomListAdapter(getApplicationContext(), passwordInfoList);
+        CustomListAdapter customListAdapter = new CustomListAdapter(getApplicationContext(), databaseHelper);
 
         Button plusButton = findViewById(R.id.addButton);
         listview.setAdapter(customListAdapter);
         plusButton.setOnClickListener(v -> {
             WebsitePopup popupLayout = new WebsitePopup();
-            popupLayout.show(v,R.layout.popuplayout,customListAdapter);
+            popupLayout.show(v, R.layout.popuplayout, customListAdapter);
         });
-
 
 
         listview.setOnItemClickListener((parent, view, position, id) -> {
             Log.d("List", "Item clicked");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             PasswordInfo passwordInfo = (PasswordInfo) customListAdapter.getItem(position);
-            showBiometricPrompt(view, passwordInfo.getPassword(),passwordInfo.getIv());
+            showBiometricPrompt(view, passwordInfo);
         });
     }
-    private void showBiometricPrompt(View view,byte[] password,byte[] iv) {
+
+    private void showBiometricPrompt(View view, PasswordInfo passwordInfo) {
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Biometric Authentication")
                 .setDescription("Please authenticate with your biometrics to continue")
@@ -94,15 +75,9 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Authentication successful", Toast.LENGTH_SHORT).show();
                         PasswordPopup passwordPopup = new PasswordPopup();
 
-                        try {
-                                passwordPopup.show(view,R.layout.showpassword_popup, PasswordSecurity.decryptMessage(password,iv));
-                        } catch (IOException | UnrecoverableEntryException | CertificateException |
-                                 KeyStoreException | NoSuchAlgorithmException |
-                                 InvalidKeyException | NoSuchPaddingException |
-                                 IllegalBlockSizeException | BadPaddingException |
-                                 InvalidAlgorithmParameterException | NoSuchProviderException e) {
-                            throw new RuntimeException(e);
-                        }
+
+                        passwordPopup.show(view, R.layout.showpassword_popup, passwordInfo);
+
 
                     }
 

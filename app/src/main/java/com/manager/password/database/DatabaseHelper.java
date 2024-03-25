@@ -29,11 +29,12 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "passwordManager";
     private static final String TABLE_PASSWORD = "password";
     public static final String WEBSITE = "website";
     public static final String PASSWORD = "password";
+    public static final String USERNAME = "username";
     public static final String IV = "iv";
 
     public DatabaseHelper(@Nullable Context context) {
@@ -44,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_PASSWORD_TABLE = "CREATE TABLE " + TABLE_PASSWORD + "("
                 + "_id" + " INTEGER PRIMARY KEY," + WEBSITE + " TEXT,"
-                + PASSWORD + " BLOB,"+IV+" BLOB "  + ")";
+                + PASSWORD + " BLOB,"+IV+" BLOB,"  +USERNAME+" TEXT "+ ")";
         db.execSQL(CREATE_PASSWORD_TABLE);
         Log.d("DB","Table crated");
     }
@@ -67,6 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 byte[] iv = PasswordSecurity.getIVSecureRandom(KeyProperties.KEY_ALGORITHM_AES);
                 values.put(PASSWORD,PasswordSecurity.encryptMessage(passwordInfo.getPassword(),iv));
                 values.put(IV,iv);
+                values.put(USERNAME,passwordInfo.getUsername());
             } catch (NoSuchProviderException | InvalidAlgorithmParameterException |
                      UnrecoverableEntryException | CertificateException | KeyStoreException |
                      IOException | NoSuchAlgorithmException | NoSuchPaddingException |
@@ -91,12 +93,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
            if (cursor.moveToFirst()) {
                Log.d("DB","Found records in DB..");
                do {
-                   PasswordInfo passwordInfo = new PasswordInfo(cursor.getInt(0), cursor.getString(1), cursor.getBlob(2),cursor.getBlob(3));
+                   PasswordInfo passwordInfo = new PasswordInfo(cursor.getInt(0), cursor.getString(1), cursor.getBlob(2),cursor.getBlob(3), cursor.getString(4));
                    passwordInfos.add(passwordInfo);
                } while (cursor.moveToNext());
            }
            Log.d("DB","Found "+passwordInfos.size()+" records in DB");
        }
        return passwordInfos;
+    }
+
+    public void deleteRecord(int id){
+        String deleteQuery = "DELETE FROM "+TABLE_PASSWORD+ " WHERE _id="+id;
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL(deleteQuery);
+        Log.d("DB","Record deleted successfully "+id);
     }
 }

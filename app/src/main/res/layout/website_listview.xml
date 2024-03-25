@@ -3,24 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
-    android:padding="5dp" >
+    android:padding="5dp"
+    android:divider="@color/black"
+    android:dividerHeight="20dp" >
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="30"
-        android:text="TextView"
+        android:text="www.google.com"
         android:padding="5dp"
         android:textSize="17dp"
+
         />
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/deleteButton"
+        android:layout_width="40dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:layout_height="40dp"
         android:layout_weight="1"
-        android:text="Show"
+        android:text=""
+        android:background="@drawable/icons8delete48"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"

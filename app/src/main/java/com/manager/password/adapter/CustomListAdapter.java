@@ -1,13 +1,16 @@
 package com.manager.password.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.manager.password.R;
+import com.manager.password.database.DatabaseHelper;
 import com.manager.password.entity.PasswordInfo;
 
 import java.util.List;
@@ -17,10 +20,12 @@ public class CustomListAdapter extends BaseAdapter {
     List<PasswordInfo> passwordInfos;
     LayoutInflater inflater;
 
-    public CustomListAdapter(Context context, List<PasswordInfo> passwordInfos) {
-        this.context = context;
-        this.passwordInfos = passwordInfos;
+    private DatabaseHelper databaseHelper;
 
+    public CustomListAdapter(Context context,DatabaseHelper databaseHelper) {
+        this.context = context;
+        this.passwordInfos = databaseHelper.getAll();
+        this.databaseHelper = databaseHelper;
         this.inflater  = (LayoutInflater.from(context));;
     }
 
@@ -33,14 +38,9 @@ public class CustomListAdapter extends BaseAdapter {
     public Object getItem(int position) {
         return passwordInfos.get(position);
     }
-    @Override
-    public void notifyDataSetChanged() // Create this function in your adapter class
-    {
-        super.notifyDataSetChanged();
-    }
 
-    public void updateList(List<PasswordInfo> passwordInfoList){
-        this.passwordInfos = passwordInfoList;
+    public void updateList(){
+        this.passwordInfos = this.databaseHelper.getAll();
         notifyDataSetChanged();
     }
 
@@ -57,6 +57,14 @@ public class CustomListAdapter extends BaseAdapter {
         }
         view = inflater.inflate(R.layout.website_listview, parent,false);
         TextView country = view.findViewById(R.id.textView);
+        Button deleteRecordBtn = view.findViewById(R.id.deleteButton);
+        deleteRecordBtn.setOnClickListener(v -> {
+            Log.d("List","Item clicked "+i);
+            DatabaseHelper databaseHelper = new DatabaseHelper(v.getContext());
+            PasswordInfo passwordInfo = (PasswordInfo)getItem(i);
+            databaseHelper.deleteRecord(passwordInfo.getId());
+            updateList();
+        });
         country.setText(passwordInfos.get(i).getWebsiteName());
         return view;
     }
