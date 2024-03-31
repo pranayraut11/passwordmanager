@@ -83,9 +83,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
            Log.d("DB","Unable to create Records");
        }
     }
-
     public List<PasswordInfo> getAll(){
-        String selectQuery = "SELECT  * FROM " + TABLE_PASSWORD;
+        return getAll(null);
+    }
+    public List<PasswordInfo> getAll(String searchText){
+        String selectQuery = null;
+        if(searchText!=null){
+             selectQuery = "SELECT  * FROM " + TABLE_PASSWORD+" WHERE "+WEBSITE+" LIKE"+" '%"+ searchText+ "%'";
+        }else {
+            selectQuery = "SELECT  * FROM " + TABLE_PASSWORD;
+        }
         SQLiteDatabase sqLiteDatabase =  getWritableDatabase();
         List<PasswordInfo> passwordInfos = new ArrayList<>();
         Log.d("DB","Getting records from DB..");
@@ -107,5 +114,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.execSQL(deleteQuery);
         Log.d("DB","Record deleted successfully "+id);
+    }
+
+    public List<PasswordInfo> search(String searchText){
+       return getAll(searchText);
     }
 }

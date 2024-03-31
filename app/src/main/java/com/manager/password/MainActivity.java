@@ -3,9 +3,12 @@ package com.manager.password;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -22,12 +25,14 @@ import com.manager.password.adapter.CustomListAdapter;
 import com.manager.password.database.DatabaseHelper;
 import com.manager.password.entity.PasswordInfo;
 import com.manager.password.layout.PasswordPopup;
-
 import com.manager.password.layout.WebsitePopup;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    CustomListAdapter customListAdapter = null;
+    DatabaseHelper databaseHelper = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         final ListView listview = findViewById(R.id.website_list);
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
-        CustomListAdapter customListAdapter = new CustomListAdapter(getApplicationContext(), databaseHelper);
+        databaseHelper = new DatabaseHelper(this);
+        customListAdapter = new CustomListAdapter(getApplicationContext(), databaseHelper);
 
         Button plusButton = findViewById(R.id.addButton);
         listview.setAdapter(customListAdapter);
@@ -57,6 +62,39 @@ public class MainActivity extends AppCompatActivity {
             PasswordInfo passwordInfo = (PasswordInfo) customListAdapter.getItem(position);
             showBiometricPrompt(view, passwordInfo);
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.searchwebsite);
+
+        Log.d("Search", "Search item");
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        assert searchView != null;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("On Submit Search", query);
+                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
+                updateListOnSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//                Log.d("New text Search", newText);
+//                Toast.makeText(getApplicationContext(), newText, Toast.LENGTH_SHORT).show();
+//                updateListOnSearch(newText);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    private void updateListOnSearch(String query){
+        List<PasswordInfo> passwordInfos = databaseHelper.search(query);
+        this.customListAdapter.updateList(passwordInfos);
     }
 
     private void showBiometricPrompt(View view, PasswordInfo passwordInfo) {
